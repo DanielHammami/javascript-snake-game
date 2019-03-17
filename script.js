@@ -1,6 +1,5 @@
 window.onload = function() 
 {
-
     var canvasWidth = 900
     var canvasHeight = 600
     var blockSize = 30
@@ -8,6 +7,8 @@ window.onload = function()
     var delay = 100
     var snakee
     var applee
+    var widthInBlocks = canvasWidth/blockSize
+    var heightInBlocks = canvasHeight/blockSize
 
     init()
 
@@ -26,11 +27,19 @@ window.onload = function()
 
     function refreshCanvas() 
     {
-        ctx.clearRect(0, 0, canvasWidth, canvasHeight)
         snakee.advance()
-        snakee.draw()
-        applee.draw()
-        setTimeout(refreshCanvas, delay)
+
+        if(snakee.checkCollision())
+        {
+            // Game over
+        }
+        else
+        {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+            snakee.draw()
+            applee.draw()
+            setTimeout(refreshCanvas, delay)
+        }
     }
     
     function drawBlock(ctx, position) 
@@ -44,19 +53,24 @@ window.onload = function()
     {
         this.body = body
         this.direction = direction
+
         this.draw = function() 
         {
             ctx.save()
-            ctx.fillStyle = '#ff0000'
+            ctx.fillStyle = '#000000'
+
             for(var i = 0; i < this.body.length; i++) 
             {
                 drawBlock(ctx, this.body[i])
             }
+
             ctx.restore()
         }
+
         this.advance = function() 
         {
             var nextPosition = this.body[0].slice()
+
             switch(this.direction)
             {
                 case 'left':
@@ -74,12 +88,15 @@ window.onload = function()
                 default:
                     throw('Invalid direction')
             }
+
             this.body.unshift(nextPosition)
             this.body.pop()
         }
+
         this.setDirection = function(newDirection) 
         {
             var allowedDirection
+
             switch(this.direction)
             {
                 case 'left':
@@ -93,16 +110,49 @@ window.onload = function()
                 default:
                     throw('Invalid direction')
             }
+
             if(allowedDirection.indexOf(newDirection) > -1)
             {
                 this.direction = newDirection
             }
+        }
+
+        this.checkCollision = function()
+        {
+            var wallCollision = false
+            var snakeCollision = false
+            var head = this.body[0]
+            var rest = this.body.slice(1)
+            var snakeX = head[0]
+            var snakeY = head[1] 
+            var minX = 0
+            var minY = 0
+            var maxX = widthInBlocks - 1
+            var maxY = heightInBlocks - 1
+            var isNotBetweenHorizontalWalls = snakeX < minX || snakeX > maxX
+            var isNotBetweenVerticalWalls = snakeY < minY || snakeY > maxY
+
+            if(isNotBetweenHorizontalWalls || isNotBetweenVerticalWalls)
+            {
+                wallCollision = true
+            }
+
+            for(var i = 0; i < rest.length; i++)
+            {
+                if(snakeX === rest[i][0] && snakeY === rest[i][1])
+                {
+                    snakeCollision = true
+                }
+            }
+
+            return wallCollision || snakeCollision
         }
     }
 
     function Apple(position)
     {
         this.position = position
+
         this.draw = function()
         {
             ctx.save()
@@ -121,6 +171,7 @@ window.onload = function()
     {
         var key = e.keyCode
         var newDirection
+
         switch(key)
         {
             case 37:
@@ -138,6 +189,7 @@ window.onload = function()
             default:
                 return
         }
+
         snakee.setDirection(newDirection)
     }
 }
