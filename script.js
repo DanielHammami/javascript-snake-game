@@ -1,5 +1,4 @@
-window.onload = function() 
-{
+window.onload = function() {
     var canvasWidth = 900
     var canvasHeight = 600
     var blockSize = 30
@@ -10,11 +9,11 @@ window.onload = function()
     var widthInBlocks = canvasWidth/blockSize
     var heightInBlocks = canvasHeight/blockSize
     var score
+    var timeout
 
     init()
 
-    function init() 
-    {
+    function init() {
         var canvas = document.createElement('canvas')
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
@@ -30,23 +29,17 @@ window.onload = function()
         refreshCanvas()
     }
 
-    function refreshCanvas() 
-    {
+    function refreshCanvas() {
         snakee.advance()
 
-        if(snakee.checkCollision())
-        {
+        if(snakee.checkCollision()) {
             gameOver()
-        }
-        else
-        {
-            if(snakee.isEatingApple(applee))
-            {
+        } else {
+            if(snakee. isEatingApple(applee)) {
                 score++
                 snakee.ateApple = true
 
-                do
-                {
+                do {
                     applee.setNewPosition()
                 }
                 while(applee.isOnSnake(snakee))
@@ -56,12 +49,11 @@ window.onload = function()
             drawScore()
             snakee.draw()
             applee.draw()
-            setTimeout(refreshCanvas, delay)
+            timeout = setTimeout(refreshCanvas, delay)
         }
     }
 
-    function gameOver()
-    {
+    function gameOver() {
         ctx.save()
         ctx.font = 'bold 70px sans-serif'
         ctx.fillStyle = '#000'
@@ -79,16 +71,15 @@ window.onload = function()
         ctx.restore()
     }
     
-    function restart()
-    {
+    function restart() {
         snakee = new Snake([[6, 4], [5, 4], [4, 4], [3, 4]], 'right')
         applee = new Apple([10, 10])
         score = 0
+        clearTimeout(timeout)
         refreshCanvas()
     }
 
-    function drawScore()
-    {
+    function drawScore() {
         ctx.save()
         ctx.font = 'bold 200px sans-serif'
         ctx.fillStyle = 'gray'
@@ -100,38 +91,32 @@ window.onload = function()
         ctx.restore()
     }
 
-    function drawBlock(ctx, position) 
-    {
+    function drawBlock(ctx, position) {
         var x = position[0] * blockSize
         var y = position[1] * blockSize
         ctx.fillRect(x, y, blockSize, blockSize)
     }
 
-    function Snake(body, direction) 
-    {
+    function Snake(body, direction) {
         this.body = body
         this.direction = direction
         this.ateApple = false
 
-        this.draw = function() 
-        {
+        this.draw = function() {
             ctx.save()
             ctx.fillStyle = '#000000'
 
-            for(var i = 0; i < this.body.length; i++) 
-            {
+            for(var i = 0; i < this.body.length; i++) {
                 drawBlock(ctx, this.body[i])
             }
 
             ctx.restore()
         }
 
-        this.advance = function() 
-        {
+        this.advance = function() {
             var nextPosition = this.body[0].slice()
 
-            switch(this.direction)
-            {
+            switch(this.direction) {
                 case 'left':
                     nextPosition[0] -= 1
                     break
@@ -150,22 +135,17 @@ window.onload = function()
 
             this.body.unshift(nextPosition)
 
-            if(!this.ateApple)
-            {
+            if(!this.ateApple) {
                 this.body.pop()
-            }
-            else
-            {
+            } else {
                 this.ateApple = false
             }
         }
 
-        this.setDirection = function(newDirection) 
-        {
+        this.setDirection = function(newDirection) {
             var allowedDirection
 
-            switch(this.direction)
-            {
+            switch(this.direction) {
                 case 'left':
                 case 'right':
                     allowedDirection = ['up', 'down']
@@ -178,14 +158,12 @@ window.onload = function()
                     throw('Invalid direction')
             }
 
-            if(allowedDirection.indexOf(newDirection) > -1)
-            {
+            if(allowedDirection.indexOf(newDirection) > -1) {
                 this.direction = newDirection
             }
         }
 
-        this.checkCollision = function()
-        {
+        this.checkCollision = function() {
             var wallCollision = false
             var snakeCollision = false
             var head = this.body[0]
@@ -199,15 +177,12 @@ window.onload = function()
             var isNotBetweenHorizontalWalls = snakeX < minX || snakeX > maxX
             var isNotBetweenVerticalWalls = snakeY < minY || snakeY > maxY
 
-            if(isNotBetweenHorizontalWalls || isNotBetweenVerticalWalls)
-            {
+            if(isNotBetweenHorizontalWalls || isNotBetweenVerticalWalls) {
                 wallCollision = true
             }
 
-            for(var i = 0; i < rest.length; i++)
-            {
-                if(snakeX === rest[i][0] && snakeY === rest[i][1])
-                {
+            for(var i = 0; i < rest.length; i++) {
+                if(snakeX === rest[i][0] && snakeY === rest[i][1]) {
                     snakeCollision = true
                 }
             }
@@ -215,27 +190,21 @@ window.onload = function()
             return wallCollision || snakeCollision
         }
 
-        this.isEatingApple = function(appleToEat)
-        {
+        this.isEatingApple = function(appleToEat) {
             var head = this.body[0]
 
-            if(head[0] === appleToEat.position[0] && head[1] === appleToEat.position[1])
-            {
+            if(head[0] === appleToEat.position[0] && head[1] === appleToEat.position[1]) {
                 return true
-            }
-            else
-            {
+            } else {
                 return false
             }
         }
     }
 
-    function Apple(position)
-    {
+    function Apple(position) {
         this.position = position
 
-        this.draw = function()
-        {
+        this.draw = function() {
             ctx.save()
             ctx.fillStyle = '#33CC33'
             ctx.beginPath()
@@ -247,19 +216,16 @@ window.onload = function()
             ctx.restore()
         }
 
-        this.setNewPosition = function()
-        {
+        this.setNewPosition = function() {
             var newX = Math.round(Math.random() * (widthInBlocks - 1))
             var newY = Math.round(Math.random() * (heightInBlocks - 1))
             this.position = [newX, newY]
         }
 
-        this.isOnSnake = function(snakeToCheck)
-        {
+        this.isOnSnake = function(snakeToCheck) {
             var isOnSnake = false
 
-            for(var i = 0; i < snakeToCheck.body.length; i++)
-            {
+            for(var i = 0; i < snakeToCheck.body.length; i++) {
                 if(this.position[0] === snakeToCheck.body[i][0] && this.position[1] === snakeToCheck.body[i][1])
                 {
                     isOnSnake = true
@@ -269,13 +235,11 @@ window.onload = function()
         }
     }
 
-    document.onkeydown = function handleKeyDown(e)
-    {
+    document.onkeydown = function handleKeyDown(e) {
         var key = e.keyCode
         var newDirection
 
-        switch(key)
-        {
+        switch(key) {
             case 37:
                 newDirection = 'left'
                 break
