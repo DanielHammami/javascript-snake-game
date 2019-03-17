@@ -18,7 +18,10 @@ window.onload = function()
         var canvas = document.createElement('canvas')
         canvas.width = canvasWidth;
         canvas.height = canvasHeight;
-        canvas.style.border = '1px solid'
+        canvas.style.border = '30px solid gray'
+        canvas.style.margin = '50px auto'
+        canvas.style.display = 'block'
+        canvas.style.backgroundColor = '#DDD'
         document.body.appendChild(canvas)
         ctx = canvas.getContext('2d')
         snakee = new Snake([[6, 4], [5, 4], [4, 4], [3, 4]], 'right')
@@ -50,9 +53,9 @@ window.onload = function()
             }
 
             ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+            drawScore()
             snakee.draw()
             applee.draw()
-            drawScore()
             setTimeout(refreshCanvas, delay)
         }
     }
@@ -60,8 +63,19 @@ window.onload = function()
     function gameOver()
     {
         ctx.save()
-        ctx.fillText('Game Over', 5, 15)
-        ctx.fillText('Appuyer sur la touche Espace pour rejouer', 5, 30)
+        ctx.font = 'bold 70px sans-serif'
+        ctx.fillStyle = '#000'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.strokeStyle = 'white'
+        ctx.lineWidth = 5
+        var centreX = canvasWidth / 2
+        var centreY = canvasHeight / 2
+        ctx.strokeText('Game Over', centreX, centreY - 180)
+        ctx.fillText('Game Over', centreX, centreY - 180)
+        ctx.font = 'bold 30px sans-serif'
+        ctx.strokeText('Appuyer sur la touche Espace pour rejouer', centreX, centreY - 120)
+        ctx.fillText('Appuyer sur la touche Espace pour rejouer', centreX, centreY - 120)
         ctx.restore()
     }
     
@@ -76,7 +90,13 @@ window.onload = function()
     function drawScore()
     {
         ctx.save()
-        ctx.fillText(score.toString(), 5, canvasHeight - 5)
+        ctx.font = 'bold 200px sans-serif'
+        ctx.fillStyle = 'gray'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        var centreX = canvasWidth / 2
+        var centreY = canvasHeight / 2
+        ctx.fillText(score.toString(), centreX, centreY)
         ctx.restore()
     }
 
